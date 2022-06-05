@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerModule } from 'nestjs-pino';
         };
       },
     }),
+    ClientsModule,
   ],
   controllers: [],
   providers: [],
