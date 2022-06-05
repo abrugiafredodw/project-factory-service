@@ -1,11 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Client } from './entities/client.entity';
 import { Observable } from 'rxjs';
-import {AxiosResponse} from "@nestjs/terminus/dist/health-indicator/http/axios.interfaces";
 
 @Controller({ path: 'clients', version: ['1'] })
 @ApiTags('Clients')
