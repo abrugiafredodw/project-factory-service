@@ -16,10 +16,7 @@ import { ClientsModule } from './clients/clients.module';
           pinoHttp: {
             name: config.get('LOG_NAME'),
             level: config.get('LOG_LEVEL'),
-            transport:
-              config.get('ENV') === 'prod'
-                ? { target: config.get('LOG_TRANSPORT') }
-                : undefined,
+            transport: { target: config.get('LOG_TRANSPORT') },
             useLevelLabels: true,
           },
         };
@@ -32,8 +29,10 @@ import { ClientsModule } from './clients/clients.module';
 })
 export class AppModule {
   public static PORT: number;
+  public  static ENV:String;
 
   constructor(private readonly configService: ConfigService) {
     AppModule.PORT = parseInt(this.configService.get('PORT'));
+    AppModule.ENV = this.configService.get('ENV');
   }
 }

@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, InternalServerErrorException} from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
 import { HttpService } from '@nestjs/axios';
-import { map, Observable } from 'rxjs';
+import {catchError, map, Observable} from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
-import { AxiosRequestHeaders } from 'axios';
+import {AxiosRequestHeaders, AxiosResponse} from 'axios';
+import {ClientsException} from "./exception/clients.exception";
+import {ApiExceptions} from "../exceptions/api.exceptions";
 
 @Injectable()
 export class ClientsService {
@@ -20,7 +21,7 @@ export class ClientsService {
     private readonly httpService: HttpService,
     private readonly config: ConfigService,
   ) {
-    this.urlClient = this.config.get('URL_CLIENTS');
+    this.urlClient = this.config.get('URL_CLIENTS')+'client';
   }
 
   create(createClientDto: CreateClientDto): Observable<Client> {
@@ -29,7 +30,15 @@ export class ClientsService {
         headers: this.header,
       })
       .pipe(
-        map((axiosResponse: AxiosResponse) => axiosResponse.data as Client),
+        map((axiosResponse:AxiosResponse) => axiosResponse.data as Client),
+          catchError(err => {
+              const error=err.response?err.response.data.error:"Error al crear el cliente";
+              if(err.code=='ECONNABORTED'){
+                  throw new ApiExceptions(err,"Error en el servicio");
+              }else {
+                  throw new ClientsException(err, error, 10000);
+              }
+          })
       );
   }
 
@@ -40,6 +49,14 @@ export class ClientsService {
       })
       .pipe(
         map((axiosResponse: AxiosResponse) => axiosResponse.data as Client[]),
+          catchError(err => {
+              const error=err.response?err.response.data.error:"Error al listar los clientes";
+              if(err.code=='ECONNABORTED'){
+                  throw new ApiExceptions(err,"Error en el servicio");
+              }else {
+                  throw new ClientsException(err, error, 10000);
+              }
+          })
       );
   }
 
@@ -50,6 +67,14 @@ export class ClientsService {
       })
       .pipe(
         map((axiosResponse: AxiosResponse) => axiosResponse.data as Client[]),
+          catchError(err => {
+              const error=err.response?err.response.data.error:"Error al listar los clientes";
+              if(err.code=='ECONNABORTED'){
+                  throw new ApiExceptions(err,"Error en el servicio");
+              }else {
+                  throw new ClientsException(err, error, 10000);
+              }
+          })
       );
   }
 
@@ -60,20 +85,36 @@ export class ClientsService {
       })
       .pipe(
         map((axiosResponse: AxiosResponse) => axiosResponse.data as Client),
+          catchError(err => {
+              const error=err.response?err.response.data.error:"Error al traer al cliente";
+              if(err.code=='ECONNABORTED'){
+                  throw new ApiExceptions(err,"Error en el servicio");
+              }else {
+                  throw new ClientsException(err, error, 10000);
+              }
+          })
       );
   }
 
-  update(updateClientDto: UpdateClientDto) {
+  update(updateClientDto: UpdateClientDto): Observable<Client> {
     return this.httpService
       .patch(`${this.urlClient}`, updateClientDto, {
         headers: this.header,
       })
       .pipe(
         map((axiosResponse: AxiosResponse) => axiosResponse.data as Client),
+          catchError(err => {
+              const error=err.response?err.response.data.error:"Error al modificar el cliente";
+              if(err.code=='ECONNABORTED'){
+                  throw new ApiExceptions(err,"Error en el servicio");
+              }else {
+                  throw new ClientsException(err, error, 10000);
+              }
+          })
       );
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} client`;
   }
 }

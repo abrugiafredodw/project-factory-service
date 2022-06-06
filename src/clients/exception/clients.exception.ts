@@ -1,0 +1,13 @@
+import {BadRequestException} from "@nestjs/common";
+
+export class ClientsException extends BadRequestException{
+
+    apiErrorCode:number;
+    apiMessage:string;
+
+    constructor(objectOrError: any, description: string,apiErrorCode:number) {
+        super(objectOrError, description);
+        this.apiErrorCode=apiErrorCode;
+        this.apiMessage=description;
+    }
+}
