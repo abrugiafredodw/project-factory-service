@@ -13,8 +13,8 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import {ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiResponse, ApiTags} from '@nestjs/swagger';
 import { Client } from './entities/client.entity';
 import { Observable } from 'rxjs';
-import {ClientsException} from "./exception/clients.exception";
 import {ErrorApi} from "../model/error.api";
+import {ResponseApi} from "../model/response-api";
 
 @Controller({ path: 'clients', version: ['1'] })
 @ApiTags('Clients')
@@ -100,7 +100,7 @@ export class ClientsController {
   @Get(':mail')
   @ApiResponse({
     status: 200,
-    description: 'Se devuelve la lista de clientes registrados disponibles.',
+    description: 'Se devuelve el clientes buscado por mail.',
     type: Client,
   })
   @ApiBadRequestResponse({
@@ -117,6 +117,28 @@ export class ClientsController {
   )
   findOne(@Param('mail') mail: string): Observable<Client> {
     return this.clientsService.findOne(mail);
+  }
+
+  @Get(':mail/avail')
+  @ApiResponse({
+    status: 200,
+    description: 'Se devuelve el clientes buscado por mail habilitado.',
+    type: Client,
+  })
+  @ApiBadRequestResponse({
+    status:400,
+    description: "Error al traer al cliente",
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse(
+      {
+        status:500,
+        description: "Error en el servicio",
+        type: ErrorApi,
+      }
+  )
+  findOneAvail(@Param('mail') mail: string): Observable<Client> {
+    return this.clientsService.findOneAvail(mail);
   }
 
   @Patch(':id')
@@ -142,7 +164,24 @@ export class ClientsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @ApiResponse({
+    status: 200,
+    description: 'Permite modificar los datos de los clientes.',
+    type: ResponseApi,
+  })
+  @ApiBadRequestResponse({
+    status:400,
+    description: "Error al modificar al cliente",
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse(
+      {
+        status:500,
+        description: "Error en el servicio",
+        type: ErrorApi,
+      }
+  )
+  remove(@Param('id') id: string):Observable<ResponseApi> {
     return this.clientsService.remove(id);
   }
 }

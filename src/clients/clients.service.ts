@@ -3,11 +3,12 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
 import { HttpService } from '@nestjs/axios';
-import {catchError, map, Observable} from 'rxjs';
+import {catchError, map, mapTo, Observable} from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import {AxiosRequestHeaders, AxiosResponse} from 'axios';
 import {ClientsException} from "./exception/clients.exception";
 import {ApiExceptions} from "../exceptions/api.exceptions";
+import {ResponseApi} from "../model/response-api";
 
 @Injectable()
 export class ClientsService {
@@ -96,6 +97,24 @@ export class ClientsService {
       );
   }
 
+    findOneAvail(mail: string): Observable<Client> {
+        return this.httpService
+            .get(`${this.urlClient}/${mail}/avail`, {
+                headers: this.header,
+            })
+            .pipe(
+                map((axiosResponse: AxiosResponse) => axiosResponse.data as Client),
+                catchError(err => {
+                    const error=err.response?err.response.data.error:"Error al traer al cliente";
+                    if(err.code=='ECONNABORTED'){
+                        throw new ApiExceptions(err,"Error en el servicio");
+                    }else {
+                        throw new ClientsException(err, error, 10000);
+                    }
+                })
+            );
+    }
+
   update(updateClientDto: UpdateClientDto): Observable<Client> {
     return this.httpService
       .patch(`${this.urlClient}`, updateClientDto, {
@@ -114,7 +133,23 @@ export class ClientsService {
       );
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} client`;
+  remove(id: string):Observable<ResponseApi> {
+      const responseApi:ResponseApi=new ResponseApi();
+      responseApi.message="Se elimino correctamente el cliente";
+      return this.httpService
+          .delete(`${this.urlClient}/${id}`, {
+              headers: this.header,
+          })
+          .pipe(
+              map(()=>responseApi),
+              catchError(err => {
+                  const error=err.response?err.response.data.error:"Error al modificar el cliente";
+                  if(err.code=='ECONNABORTED'){
+                      throw new ApiExceptions(err,"Error en el servicio");
+                  }else {
+                      throw new ClientsException(err, error, 10000);
+                  }
+              })
+          );
   }
 }
