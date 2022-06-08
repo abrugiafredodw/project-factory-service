@@ -6,6 +6,7 @@ export class CreateClientDto {
     name: 'name',
     description: 'Nombre del cliente',
     required: true,
+    example:"emrpesa SA"
   })
   @IsNotEmpty({message: "Ingrese un nombre"})
   name: string;
@@ -13,6 +14,7 @@ export class CreateClientDto {
     name: 'mail',
     description: 'Mail del cliente',
     required: true,
+    example:"empresa@coreo.com",
   })
   @IsEmail({},{message: "Formato de mail no valido"})
   mail: string;
