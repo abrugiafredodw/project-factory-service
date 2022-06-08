@@ -11,7 +11,12 @@ export class ErrorApi{
         description: 'Mensaje de error de la api'
     })
     message: string;
-
+    @ApiProperty({
+        name:'errores',
+        description: 'Errores validacion',
+        isArray: true,
+    })
+    errores: string[];
 
     trace?:any;
 }

@@ -10,6 +10,7 @@ export class FallbackFilter implements ExceptionFilter {
     const apiError:ErrorApi={
       code:500,
       message:exception.message || 'Error en el servidor',
+      errores:[],
       trace: AppModule.ENV!=='prod'?exception.stack:undefined,
     }
     return res.status(500).json(apiError);
