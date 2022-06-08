@@ -10,11 +10,16 @@ import {
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import {ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Client } from './entities/client.entity';
 import { Observable } from 'rxjs';
-import {ErrorApi} from "../model/error.api";
-import {ResponseApi} from "../model/response-api";
+import { ErrorApi } from '../model/error.api';
+import { ResponseApi } from '../model/response-api';
 
 @Controller({ path: 'clients', version: ['1'] })
 @ApiTags('Clients')
@@ -28,17 +33,15 @@ export class ClientsController {
     type: Client,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al crear al cliente",
+    status: 400,
+    description: 'Error al crear al cliente',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   create(@Body() createClientDto: CreateClientDto): Observable<Client> {
     createClientDto.avail = true;
     return this.clientsService.create(createClientDto);
@@ -51,25 +54,21 @@ export class ClientsController {
     type: Client,
     isArray: true,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
-  @ApiBadRequestResponse({
-    status:400,
-    description: "Error al listar los clientes",
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error al listar los clientes',
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   findAll(): Observable<Client[]> {
     return this.clientsService.findAll();
   }
@@ -82,17 +81,15 @@ export class ClientsController {
     isArray: true,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al listar los clientes",
+    status: 400,
+    description: 'Error al listar los clientes',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   findAllAvail(): Observable<Client[]> {
     return this.clientsService.findAllAvail();
   }
@@ -104,17 +101,15 @@ export class ClientsController {
     type: Client,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al traer al cliente",
+    status: 400,
+    description: 'Error al traer al cliente',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   findOne(@Param('mail') mail: string): Observable<Client> {
     return this.clientsService.findOne(mail);
   }
@@ -126,39 +121,35 @@ export class ClientsController {
     type: Client,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al traer al cliente",
+    status: 400,
+    description: 'Error al traer al cliente',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   findOneAvail(@Param('mail') mail: string): Observable<Client> {
     return this.clientsService.findOneAvail(mail);
   }
 
-  @Patch(':id')
+  @Patch()
   @ApiResponse({
     status: 200,
     description: 'Permite modificar los datos de los clientes.',
     type: Client,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al modificar al cliente",
+    status: 400,
+    description: 'Error al modificar al cliente',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
   update(@Body() updateClientDto: UpdateClientDto): Observable<Client> {
     return this.clientsService.update(updateClientDto);
   }
@@ -170,18 +161,16 @@ export class ClientsController {
     type: ResponseApi,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description: "Error al modificar al cliente",
+    status: 400,
+    description: 'Error al modificar al cliente',
     type: ErrorApi,
   })
-  @ApiInternalServerErrorResponse(
-      {
-        status:500,
-        description: "Error en el servicio",
-        type: ErrorApi,
-      }
-  )
-  remove(@Param('id') id: string):Observable<ResponseApi> {
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
+  remove(@Param('id') id: string): Observable<ResponseApi> {
     return this.clientsService.remove(id);
   }
 }
