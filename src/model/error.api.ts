@@ -14,7 +14,8 @@ export class ErrorApi{
     @ApiProperty({
         name:'errores',
         description: 'Errores validacion',
-        isArray: true,
+        isArray:true,
+        type: "string"
     })
     errores: string[];
 
