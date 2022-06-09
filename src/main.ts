@@ -5,8 +5,8 @@ import { FallbackFilter } from './filters/fallback.filter';
 import { ErrorFilter } from './filters/error.filter';
 import { HealthFilter } from './filters/health.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {ValidationError, ValidationPipe} from "@nestjs/common";
-import {ValidationsException} from "./exceptions/validations.exception";
+import { ValidationError, ValidationPipe } from '@nestjs/common';
+import { ValidationsException } from './exceptions/validations.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,19 +14,23 @@ async function bootstrap() {
   app.enableVersioning();
   app.useLogger(app.get(Logger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
-  app.useGlobalPipes(new ValidationPipe({
-    exceptionFactory: (errores: ValidationError[]) => {
-      const erroresCustomizados = errores.map((error) => {
-        const map1 = new Map(Object.entries(error.constraints));
-        let errorText=[];
-        for (let text of map1.values()){
-          errorText.push(text);
-        }
-         return `El campo ${error.property} tienen los siguientes errores: [${errorText.join(", ")}]`;
-      });
-      return new ValidationsException(erroresCustomizados);
-    },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errores: ValidationError[]) => {
+        const erroresCustomizados = errores.map((error) => {
+          const map1 = new Map(Object.entries(error.constraints));
+          const errorText = [];
+          for (const text of map1.values()) {
+            errorText.push(text);
+          }
+          return `El campo ${
+            error.property
+          } tienen los siguientes errores: [${errorText.join(', ')}]`;
+        });
+        return new ValidationsException(erroresCustomizados);
+      },
+    }),
+  );
   app.useGlobalFilters(
     new FallbackFilter(),
     new ErrorFilter(),

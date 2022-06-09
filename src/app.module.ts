@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { ClientsModule } from './clients/clients.module';
 import { TalentsModule } from './talents/talents.module';
+import {ServeStaticModule} from "@nestjs/serve-static";
+import {join} from "path";
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { TalentsModule } from './talents/talents.module';
         };
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'image'),
+      serveRoot: '/image/',
+    }),
     ClientsModule,
     TalentsModule,
   ],
@@ -31,7 +37,7 @@ import { TalentsModule } from './talents/talents.module';
 })
 export class AppModule {
   public static PORT: number;
-  public  static ENV:String;
+  public static ENV: string;
 
   constructor(private readonly configService: ConfigService) {
     AppModule.PORT = parseInt(this.configService.get('PORT'));

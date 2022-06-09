@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TalentsService } from './talents.service';
 import { TalentsController } from './talents.controller';
-import {HttpModule} from "@nestjs/axios";
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports:[
+  imports: [
     HttpModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -17,6 +17,6 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
     }),
   ],
   controllers: [TalentsController],
-  providers: [TalentsService]
+  providers: [TalentsService],
 })
 export class TalentsModule {}
