@@ -157,7 +157,7 @@ export class ClientsService {
         catchError((err) => {
           const error = err.response
             ? err.response.data.error
-            : 'Error al modificar el cliente';
+            : 'Error al eliminar el cliente';
           if (err.code == 'ECONNABORTED') {
             throw new ApiExceptions(err, 'Error en el servicio');
           } else {
