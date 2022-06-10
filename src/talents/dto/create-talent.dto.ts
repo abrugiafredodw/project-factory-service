@@ -1,6 +1,11 @@
 import { Rol } from '../enum/rol.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import {
+  IsDefined,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateTalentDto {
   @ApiProperty({
@@ -36,6 +41,16 @@ export class CreateTalentDto {
   })
   @IsEnum(Rol, { message: 'Valor no permitido en el campo' })
   rol: Rol;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Foto del talento, Formatos: [jpg, jpeg, png]',
+    required: true,
+  })
+  @IsDefined({ message: 'La imagen es requerida' })
+  image: Express.Multer.File;
+
   photo?: string;
   avail?: boolean;
 }

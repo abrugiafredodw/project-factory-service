@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,8 +15,10 @@ import { CreateTalentDto } from './dto/create-talent.dto';
 import { UpdateTalentDto } from './dto/update-talent.dto';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConsumes,
   ApiInternalServerErrorResponse,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -27,6 +30,7 @@ import { diskStorage } from 'multer';
 import { ApiImplicitFile } from '@nestjs/swagger/dist/decorators/api-implicit-file.decorator';
 import { fileName, imageFileFilter } from './utils/file.utils';
 import { Observable } from 'rxjs';
+import { ValidationsException } from '../exceptions/validations.exception';
 
 @Controller({ path: 'talents', version: ['1'] })
 @ApiTags('Talents')
@@ -35,11 +39,6 @@ export class TalentsController {
 
   @Post()
   @ApiConsumes('multipart/form-data')
-  @ApiImplicitFile({
-    name: 'file',
-    required: true,
-    description: 'Foto del talento, Formatos: [jpg, jpeg, png] ',
-  })
   @ApiResponse({
     status: 201,
     description: 'Se guarda el talento con exito.',
@@ -88,8 +87,29 @@ export class TalentsController {
     description: 'Error en el servicio',
     type: ErrorApi,
   })
-  findAll() {
+  findAll(): Observable<Talent[]> {
     return this.talentsService.findAll();
+  }
+
+  @Get('avail')
+  @ApiResponse({
+    status: 200,
+    description: 'Se lista los talentos habilitado.',
+    type: Talent,
+    isArray: true,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error al listar los talentos.',
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
+  findAllAvail(): Observable<Talent[]> {
+    return this.talentsService.findAllAvail();
   }
 
   @Get(':mail')
@@ -108,8 +128,42 @@ export class TalentsController {
     description: 'Error en el servicio',
     type: ErrorApi,
   })
-  findOne(@Param('mail') mail: string) {
+  @ApiParam({
+    name: 'mail',
+    type: 'string',
+    required: true,
+    description: 'Mail del talento',
+    example: 'persona@correo.com',
+  })
+  findOne(@Param('mail') mail: string): Observable<Talent> {
     return this.talentsService.findOne(mail);
+  }
+
+  @Get(':mail/avail')
+  @ApiResponse({
+    status: 200,
+    description: 'Se obtiene el talento habilitado.',
+    type: Talent,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Mensaje de error al obtener el talento habilitado.',
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
+  @ApiParam({
+    name: 'mail',
+    type: 'string',
+    required: true,
+    description: 'Mail del talento',
+    example: 'persona@correo.com',
+  })
+  findOneAvail(@Param('mail') mail: string): Observable<Talent> {
+    return this.talentsService.findOneAvail(mail);
   }
 
   @Patch()
@@ -128,8 +182,64 @@ export class TalentsController {
     description: 'Error en el servicio',
     type: ErrorApi,
   })
-  update(@Body() updateTalentDto: UpdateTalentDto) {
+  update(@Body() updateTalentDto: UpdateTalentDto): Promise<Talent> {
     return this.talentsService.update(updateTalentDto);
+  }
+
+  @Put(':id')
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 200,
+    description: 'Se modifica la foto del talento.',
+    type: Talent,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error al modificar la foto del talento.',
+    type: ErrorApi,
+  })
+  @ApiInternalServerErrorResponse({
+    status: 500,
+    description: 'Error en el servicio',
+    type: ErrorApi,
+  })
+  @UseInterceptors(
+    FileInterceptor('image', {
+      fileFilter: imageFileFilter,
+      storage: diskStorage({
+        destination: './image',
+        filename: fileName,
+      }),
+    }),
+  )
+  @ApiBody({
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          description: 'Foto del talento, Formatos: [jpg, jpeg, png]',
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    required: true,
+    description: 'Id del talento',
+    example: 'asdasd1q23213asda',
+  })
+  updatePhoto(
+    @UploadedFile() image: Express.Multer.File,
+    @Param('id') id: string,
+  ): Promise<Talent> {
+    if (!image) {
+      throw new ValidationsException(['La imagen es requerida']);
+    }
+    return this.talentsService.updatePhoto(image, id);
   }
 
   @Delete(':id')
@@ -148,7 +258,14 @@ export class TalentsController {
     description: 'Error en el servicio',
     type: ErrorApi,
   })
-  remove(@Param('id') id: string) {
-    return this.talentsService.remove(+id);
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    required: true,
+    description: 'Id del talento',
+    example: 'asdasd1q23213asda',
+  })
+  remove(@Param('id') id: string): Observable<ResponseApi> {
+    return this.talentsService.remove(id);
   }
 }
