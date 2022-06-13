@@ -6,6 +6,7 @@ import { ClientsModule } from './clients/clients.module';
 import { TalentsModule } from './talents/talents.module';
 import {ServeStaticModule} from "@nestjs/serve-static";
 import {join} from "path";
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import {join} from "path";
     }),
     ClientsModule,
     TalentsModule,
+    ProjectModule,
   ],
   controllers: [],
   providers: [],

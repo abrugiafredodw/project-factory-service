@@ -27,7 +27,6 @@ import { Talent } from './entities/talent.entity';
 import { ResponseApi } from '../model/response-api';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { ApiImplicitFile } from '@nestjs/swagger/dist/decorators/api-implicit-file.decorator';
 import { fileName, imageFileFilter } from './utils/file.utils';
 import { Observable } from 'rxjs';
 import { ValidationsException } from '../exceptions/validations.exception';
@@ -186,7 +185,7 @@ export class TalentsController {
     return this.talentsService.update(updateTalentDto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 200,
