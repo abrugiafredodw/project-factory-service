@@ -307,6 +307,6 @@ export class ProjectController {
     example: 'asd123asdas313',
   })
   remove(@Param('id') id: string): Observable<ResponseApi> {
-    return this.projectService.remove(+id);
+    return this.projectService.remove(id);
   }
 }

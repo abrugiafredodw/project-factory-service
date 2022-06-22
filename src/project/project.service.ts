@@ -5,7 +5,13 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { AxiosRequestHeaders, AxiosResponse } from 'axios';
 import { State as Statee } from './enum/state.enum';
-import { catchError, lastValueFrom, map, Observable } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  lastValueFrom,
+  map,
+  Observable,
+} from 'rxjs';
 import { Project } from './entities/project.entity';
 import { ApiExceptions } from '../exceptions/api.exceptions';
 import { ProjectException } from './exception/project.exception';
@@ -176,7 +182,7 @@ export class ProjectService {
       );
   }
 
-  remove(id: number): Observable<ResponseApi> {
+  remove(id: string): Observable<ResponseApi> {
     const responseApi: ResponseApi = new ResponseApi();
     responseApi.message = 'Se elimino correctamente el projecto';
     return this.httpService
@@ -217,27 +223,32 @@ export class ProjectService {
     id: string,
     clientAsignedProjectsDto: ClientAsignedProjectsDto,
   ): Promise<Project[]> {
-    const projectsUd: Project[] = [];
+    let projectsUd: Project[] = [];
     try {
       const client: Client = await lastValueFrom(
         this.clientSV.findOneIdAvail(id),
       );
-      const projects: Project[] = [];
-      clientAsignedProjectsDto.projects.map(async (idP) => {
-        projects.push(await lastValueFrom(this.findOne(idP)));
-      });
-      projects.map(async (p: Project) => {
-        const projectUpdate: UpdateProjectDto = {
-          _id: p._id,
-          name: p.name,
-          duration: p.duration,
-          talents: p.talents,
-          avail: p.avail,
-          state: p.state,
-          client: client,
-        };
-        projectsUd.push(await lastValueFrom(this.update(projectUpdate)));
-      });
+
+      const projects: Project[] = await Promise.all(
+        clientAsignedProjectsDto.projects.map(async (idP) => {
+          return await lastValueFrom(this.findOne(idP));
+        }),
+      );
+
+      projectsUd = await Promise.all(
+        projects.map(async (p: Project) => {
+          const projectUpdate: UpdateProjectDto = {
+            _id: p._id,
+            name: p.name,
+            duration: p.duration,
+            talents: p.talents,
+            avail: p.avail,
+            state: p.state,
+            client: client,
+          };
+          return await lastValueFrom(this.update(projectUpdate));
+        }),
+      );
     } catch (Error: any) {
       if (Error instanceof ClientsException) {
         throw new ProjectException(Error, Error.apiMessage, 30002);
