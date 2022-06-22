@@ -3,6 +3,7 @@ import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsService } from '../clients/clients.service';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [ProjectController],
-  providers: [ProjectService]
+  providers: [ProjectService, ClientsService],
 })
 export class ProjectModule {}

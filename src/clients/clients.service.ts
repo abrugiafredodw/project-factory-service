@@ -166,4 +166,24 @@ export class ClientsService {
         }),
       );
   }
+
+  findOneIdAvail(id: string): Observable<Client> {
+    return this.httpService
+      .get(`${this.urlClient}/id/${id}/avail`, {
+        headers: this.header,
+      })
+      .pipe(
+        map((axiosResponse: AxiosResponse) => axiosResponse.data as Client),
+        catchError((err) => {
+          const error = err.response
+            ? err.response.data.error
+            : 'Error al traer al cliente';
+          if (err.code == 'ECONNABORTED') {
+            throw new ApiExceptions(err, 'Error en el servicio');
+          } else {
+            throw new ClientsException(err, error, 10000);
+          }
+        }),
+      );
+  }
 }

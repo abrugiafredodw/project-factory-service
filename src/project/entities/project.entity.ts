@@ -52,4 +52,12 @@ export class Project {
     examples: Object.values(State),
   })
   state: State;
+  @ApiProperty({
+    name: 'avail',
+    type: 'boolean',
+    description: 'Proyecto habilitado',
+    required: true,
+    example: true,
+  })
+  avail: boolean;
 }

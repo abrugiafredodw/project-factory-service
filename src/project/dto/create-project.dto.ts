@@ -52,4 +52,5 @@ export class CreateProjectDto {
   talents: Talent[];
 
   state?: State;
+  avail?: boolean;
 }
