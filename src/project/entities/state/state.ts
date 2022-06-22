@@ -11,7 +11,7 @@ export abstract class State {
   }
 
   public next(state: string): State {
-    if (this.stateTransition.filter((s) => s == state)) {
+    if (this.stateTransition.find((s) => s == state)) {
       return StateFactory.getState(state);
     } else {
       throw new ProjectException(

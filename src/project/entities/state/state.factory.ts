@@ -9,7 +9,7 @@ export class StateFactory {
     switch (state) {
       case 'PENDING':
         return new Pending();
-      case 'GOIN':
+      case 'GOING':
         return new Going();
       case 'SUSPEND':
         return new Suspend();
